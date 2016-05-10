@@ -1,0 +1,69 @@
+#pragma once
+#include "Clients.h"
+#include "Products.h"
+#include "Transactions.h"
+#include "Advertising.h"
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Menu
+{
+private:
+	int lineLength;
+	int activeMenu;
+	vector<string> menuOptions;
+	vector<vector<string>> subMenus;
+	Clients * clients;
+	Products * products;
+	Transactions * transactions;
+	Advertising * advertising;
+
+	void printBar(bool printNewLine=true) const;
+	void printLine(string text, bool printNewLine=true, bool boxed = true, bool clear = false) const;
+	void printHeader(string menuText) const;
+	void printFooter(bool isSubMenu = false) const;
+public:
+	Menu(Clients * clients, Products * products, Transactions * transactions, Advertising * advertising);
+	void printMenu(unsigned int option);
+	int getOption() const;
+	int getActiveMenu() const;
+	
+	void customersAdd();
+	void customersView();
+	void customersEdit();
+	void customersRemove();
+	void customersRecommendations();
+	void productsAdd();
+	void productsView();
+	void transactionsMake();
+	void transactionsView();
+
+	enum Menus {
+		MAIN = 0,
+		M_CUSTOMERS = 1,
+		M_PRODUCTS = 2,
+		M_TRANSACTIONS = 3
+	};
+	enum M_Customers {
+		C_ADD = 1,
+		C_VIEW = 2,
+		C_EDIT = 3,
+		C_REMOVE = 4,
+		C_RECOMMENDATIONS = 5
+	};
+	enum M_Products {
+		P_ADD = 1,
+		P_VIEW = 2
+	};
+	enum M_Transactions {
+		T_MAKE = 1,
+		T_VIEW = 2
+	};
+
+	enum ReturnCode {
+		RETURN = 0
+	};
+};
