@@ -160,19 +160,37 @@ int Menu::getActiveMenu() const
 
 void Menu::customersAdd()
 {
-	unsigned int id = (*clients).getLastId() + 1;
-	string name;
-	Date date = Date::createDate();
+	string idString = std::to_string((*clients).getLastId() + 1), name, dateString = Date::createDate().toString();
 
 	cin.clear();
 	cin.ignore(10000, '\n');
 
-	printLine("Enter customer ID (Enter for " + std::to_string(id) + "): ");
-	printLine("Enter customer name: ", false, false, true);
+	printLine("Enter customer ID (Enter for " + idString + "): ", false, false, true);
+	getline(cin, idString);
+	if (idString.size() == 0)
+		idString = std::to_string((*clients).getLastId() + 1);
+	if ((*clients).getClient(std::stoi(idString)).getId() != 0)
+	{
+		printLine("ID already in use!", true, false, false);
+		cin.clear();
+		cin.ignore(10000, '\n');
+		return;
+	}
+
+	printLine("Enter customer name: ", false, false, false);
 	getline(cin, name);
-	(*clients).addClient(name);
+
+	printLine("Enter custom date (Enter for " + dateString + "): ", false, false, false);
+	getline(cin, dateString);
+	if (dateString.size() == 0)
+		dateString = Date::createDate().toString();
+
+	unsigned int id = std::stoul(idString);
+	Date date(dateString);
+	Client c(id, name, date, 0.0);
+	(*clients).addClient(c);
 	printLine("Client created!", true, false, true);
-	(*clients).printClient((*clients).size());
+	(*clients).printClient(id);
 
 	system("pause");
 }
@@ -180,16 +198,12 @@ void Menu::customersAdd()
 void Menu::customersView()
 {
 	string input;
-	string info = "Enter customer ID (Enter 'id' for all by ID; Enter 'name' for all by Name): ";
+	string info = "Enter customer ID (Enter '*' for all by Name): ";
 
 	printLine(info, false, false, true);
 
 	cin >> input;
-	if (input.find("id") == 0)
-	{
-		(*clients).dump();
-	}
-	else if (input.find("name") == 0)
+	if (input.find("*") == 0)
 	{
 		(*clients).list();
 	}

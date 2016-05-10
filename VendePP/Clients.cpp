@@ -94,17 +94,23 @@ void Clients::list()
 	}
 }
 
-void Clients::addClient(string name)
+void Clients::addClient(Client client)
 {
-	Client c(clients.size() + 1, name, Date::createDate(), 0);
-	clients.push_back(c);
+	clients.push_back(client);
 	save();
 }
 
 void Clients::editClient(unsigned int clientId, string name, double payment)
 {
-	clients.at(clientId - 1).setName(name);
-	clients.at(clientId - 1).addPayment(payment);
+	for (vector<Client>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if ((*it).getId() == clientId)
+		{
+			(*it).setName(name);
+			(*it).addPayment(payment);
+			break;
+		}
+	}
 	save();
 }
 

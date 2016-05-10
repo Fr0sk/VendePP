@@ -24,7 +24,7 @@ public:
 	bool printClient(unsigned int clientId);
 	void dump();
 	void list();
-	void addClient(string name);
+	void addClient(Client client);
 	void editClient(unsigned int clientId, string name, double amountPaid);
 	Client getClient(unsigned int clientId);
 	Client getClient(string name);
