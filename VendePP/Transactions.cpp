@@ -46,11 +46,15 @@ void Transactions::save()
 	values.push_back(to_string(size()));
 
 	string line;
-	for (vector<Transaction>::const_iterator it = transactions.begin(); it != transactions.end(); it++)
+	for (vector<Transaction>::const_iterator transaction = transactions.begin(); transaction != transactions.end(); transaction++)
 	{
-		line = (*it).getClientId() + " ; " + (*it).getDate().toString() + " ; " + (*it).getProducts().at(0).getName();
-		for (vector<Product>::const_iterator it2 = (*it).getProducts().begin() + 1; it2 != (*it).getProducts().end(); it2++)
-			line += ", " + (*it2).getName();
+		values.push_back(to_string((*transaction).getClientId()));
+		values.push_back((*transaction).getDate().toString());
+		
+		line = (*transaction).getProducts().at(0).getName();
+		vector<Product> productList = (*transaction).getProducts();
+		for (vector<Product>::const_iterator product = productList.begin() + 1; product != productList.end(); product++)
+			line += ", " + (*product).getName();
 		values.push_back(line);
 	}
 	database.write(values);
@@ -157,9 +161,9 @@ void Transactions::dump()
 	}
 }
 
-void Transactions::addTransaction(unsigned int clientId, vector<Product> productIds)
+void Transactions::addTransaction(unsigned int clientId, vector<Product> productList)
 {
-	Transaction transaction(clientId, Date::createDate(), productIds);
+	Transaction transaction(clientId, Date::createDate(), productList);
 	transactions.push_back(transaction);
 	save();
 }

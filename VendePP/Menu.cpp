@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <cmath>
+#include <iomanip>
 
 using namespace std;
 
@@ -93,6 +94,8 @@ Menu::Menu(Clients * clients, Products * products, Transactions * transactions, 
 	subMenus.push_back(manageCustomers);
 	subMenus.push_back(manageProducts);
 	subMenus.push_back(manageTransactions);
+
+	setprecision(2);
 }
 
 void Menu::printMenu(unsigned int option)
@@ -389,13 +392,14 @@ void Menu::productsView()
 void Menu::transactionsMake()
 {
 	unsigned int clientId;
+	double payment = 0;
 	string input;
 	vector<Product>productList;
 	cin.clear();
 	cin.ignore(10000, '\n');
 
 	printLine("Enter client ID: ", false, false, true);
-	if (!(cin >> clientId))
+	if (!(cin >> clientId) || (*clients).getClient(clientId).getId() == 0)
 	{
 		printLine("Invalid client ID!", true, false, false);
 		system("pause");
@@ -404,6 +408,8 @@ void Menu::transactionsMake()
 
 	cin.clear();
 	cin.ignore(10000, '\n');
+
+	printLine("Total: " + toStringWithPrecision(payment, 2), true, false, false);
 	printLine("Enter product names (0 to exit): ", false, false, false);
 	getline(cin, input);
 
@@ -411,8 +417,21 @@ void Menu::transactionsMake()
 	{
 		Product p = (*products).getProduct(input);
 		if (p.getName() != "")
+		{
 			productList.push_back(p);
+			payment += p.getPrice();
+			printLine(p.getName() + " added at price: " + toStringWithPrecision(p.getPrice(), 2), true, false, true);
+		} else {
+			printLine("Product " + input + " not found!", true, false, true);
+		}
+		system("pause");
+
+		printLine("Total: " + toStringWithPrecision(payment, 2), true, false, true);
+		printLine("Enter product names (0 to exit): ", false, false, false);
+		getline(cin, input);
 	}
+
+
 	if (productList.size() == 0)
 	{
 		printLine("Invalid products", true, false, false);
@@ -420,10 +439,15 @@ void Menu::transactionsMake()
 		return;
 	}
 
+	// Create transaction
 	(*transactions).addTransaction(clientId, productList);
 
+	// Update client
+	Client c = (*clients).getClient(clientId);
+	(*clients).editClient(c.getId(), c.getName(), payment);
+
 	printLine("Transaction made!", true, false, true);
-	(*transactions).printTransaction((*transactions).size());
+	(*transactions).printTransaction((*transactions).size() - 1);
 	system("pause");
 }
 
@@ -433,7 +457,7 @@ void Menu::transactionsView()
 	printBar(true);
 	printLine("");
 	printLine("View Transactions:");
-	printLine("1 - By ID");
+	printLine("1 - By Index");
 	printLine("2 - By Client");
 	printLine("3 - By Date");
 	printLine("4 - Between two dates");
@@ -566,4 +590,13 @@ void Menu::transactionsView()
 		break;
 	}
 	system("pause");
+}
+
+
+string Menu::toStringWithPrecision(double value, int precision)
+{
+	string tmp = to_string(value);
+	if (tmp.find(".") != string::npos)
+		tmp = tmp.substr(0, tmp.find(".") + precision + 1);
+	return tmp;
 }

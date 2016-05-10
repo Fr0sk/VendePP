@@ -41,6 +41,9 @@ public:
 	void transactionsMake();
 	void transactionsView();
 
+	// Helper function
+	static string toStringWithPrecision(double value, int precision);
+
 	enum Menus {
 		MAIN = 0,
 		M_CUSTOMERS = 1,
