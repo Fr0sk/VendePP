@@ -26,6 +26,7 @@ public:
 	void list();
 	void addClient(Client client);
 	void editClient(unsigned int clientId, string name, double amountPaid);
+	bool removeClient(unsigned int id);
 	Client getClient(unsigned int clientId);
 	Client getClient(string name);
 	unsigned int getLastId() const;

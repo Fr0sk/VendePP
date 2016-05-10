@@ -279,17 +279,35 @@ void Menu::customersEdit()
 
 void Menu::customersRemove()
 {
-	// TODO Remover clientes
-	/*unsigned int id;
+	unsigned int id;
 	string info = "Enter customer ID: ";
 	printLine(info, false, false, true);
 	if (!(cin >> id))
-		printLine("Invalid option", true, false, false);
-	else if ((*clients).removeClient(id))
-		printLine("Client removed!", true, false, true);
+		printLine("Invalid ID", true, false, false);
+	else if ((*clients).getClient(id).getId() == 0)
+		printLine("There is no client with that ID", true, false, false);
 	else
-		printLine("Client couldn't be removed!", true, false, true);
-		*/
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		string choice;
+
+		(*clients).printClient(id);
+		printLine("Do you wish to remove this client? (Y - Yes; N - No): ", false, false, false);
+		getline(cin, choice);
+
+		if (choice == "Y" || choice == "y")
+		{
+			if ((*clients).removeClient(id))
+				printLine("Client removed!", true, false, false);
+			else
+				printLine("Client couldn't be removed!", true, false, false);
+		}
+		else {
+			printLine("Client not removed!", true, false, false);
+		}
+	}
+	
 	system("pause");
 }
 

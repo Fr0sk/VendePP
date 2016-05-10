@@ -108,10 +108,24 @@ void Clients::editClient(unsigned int clientId, string name, double payment)
 		{
 			(*it).setName(name);
 			(*it).addPayment(payment);
+			save();
 			break;
 		}
 	}
-	save();
+}
+
+bool Clients::removeClient(unsigned int id)
+{
+	for (vector<Client>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if ((*it).getId() == id)
+		{
+			clients.erase(it);
+			save();
+			return true;
+		}
+	}
+	return false;
 }
 
 Client Clients::getClient(unsigned int clientId)
