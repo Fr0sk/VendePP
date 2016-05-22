@@ -1,3 +1,9 @@
+/*
+* Grupo: T7G03*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #include "Transactions.h"
 
 #include <iostream>
@@ -168,7 +174,7 @@ void Transactions::addTransaction(unsigned int clientId, vector<Product> product
 	save();
 }
 
-Transaction Transactions::getTransaction(unsigned int transactionId)
+Transaction Transactions::getTransaction(unsigned int index)
 {
-	return transactions.at(transactionId - 1);
+	return transactions.at(index);
 }

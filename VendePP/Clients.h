@@ -1,3 +1,10 @@
+/*
+* Grupo: T7G03
+*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #pragma once
 #include "Client.h"
 #include "Database.h"
@@ -12,6 +19,7 @@ class Clients
 {
 private:
 	vector<Client> clients;
+	vector<Client> clients_sorted_by_amoutPaid;
 	Database database;
 	
 	void setupDatabase(string path);
@@ -30,7 +38,11 @@ public:
 	Client getClient(unsigned int clientId);
 	Client getClient(string name);
 	unsigned int getLastId() const;
+	void SortClientsByAmountPaid();
+	vector<Client> CalculateBottom10();
+	unsigned int getClientIndex(unsigned int clientId);
+	bool exists(unsigned int clientId);
 };
 
 bool nameOrder(Client left, Client right);
-
+bool cmd(const Client & c1, const Client & c2);

@@ -169,11 +169,6 @@
     <ClInclude Include="Transaction.h" />
     <ClInclude Include="Transactions.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="clients.ini" />
-    <None Include="products.ini" />
-    <None Include="transactions.ini" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

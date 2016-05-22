@@ -1,3 +1,9 @@
+/*
+* Grupo: T7G03*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #include "Database.h"
 
 #include <iostream>

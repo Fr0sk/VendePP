@@ -1,3 +1,10 @@
+/*
+* Grupo: T7G03
+*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #pragma once
 #include "Clients.h"
 #include "Products.h"
@@ -36,6 +43,7 @@ public:
 	void customersEdit();
 	void customersRemove();
 	void customersRecommendations();
+	void bottom10Recommendations();
 	void productsAdd();
 	void productsView();
 	void transactionsMake();
@@ -55,7 +63,8 @@ public:
 		C_VIEW = 2,
 		C_EDIT = 3,
 		C_REMOVE = 4,
-		C_RECOMMENDATIONS = 5
+		C_ADVERTISING = 5,
+		C_BOTTOM_10_ADS = 6
 	};
 	enum M_Products {
 		P_ADD = 1,

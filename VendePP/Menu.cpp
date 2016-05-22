@@ -1,3 +1,10 @@
+/*
+* Grupo: T7G03
+*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #include "Menu.h"
 #include "Clients.h"
 #include "Products.h"
@@ -80,7 +87,8 @@ Menu::Menu(Clients * clients, Products * products, Transactions * transactions, 
 	manageCustomers.push_back("View Customer");
 	manageCustomers.push_back("Edit Customer");
 	manageCustomers.push_back("Remove Customer");
-	manageCustomers.push_back("Get Recommendations");
+	manageCustomers.push_back("Advertising");
+	manageCustomers.push_back("Bottom 10 Advertising");
 
 	vector<string> manageProducts;
 	manageProducts.push_back("Add Product");
@@ -316,32 +324,42 @@ void Menu::customersRemove()
 
 void Menu::customersRecommendations()
 {
-	// TODO Recomendações
-	/*unsigned int id;
+	unsigned int id;
 	string info = "Enter customer ID: ";
 	printLine(info, false, false, true);
 	if (!(cin >> id))
 		printLine("Invalid option", true, false, false);
-	else if (id == 0 || id > (*clients).size())
+	else if (!clients->exists(id))
 		printLine("There is no client with that ID!", true, false, false);
 	else {
 		// Prints the client
 		printLine("", true, false, false);
 		(*clients).printClient(id);
 
-		vector<unsigned int> productIds = (*advertising).getAdvertising(id);
-		if (productIds.size() == 0)
+		Product p = (*advertising).getAdvertising(id);
+		if (p.getName().size() == 0)
 			printLine("There is no recommendation for this client!", true, false, false);
 		else {
 			printLine("\tRecommendations:", true, false, false);
-
-			for (vector<unsigned int>::iterator it = productIds.begin(); it != productIds.end(); it++)
-			{
-				Product p = (*products).getProduct(*it);
-				printLine("\t\t" + p.getName() , true, false, false);
-			}
+			printLine("\t\t" + p.getName() + " - " + toStringWithPrecision(p.getPrice(), 2), true, false, false);
 		}
-	}*/
+	}
+
+	system("pause");
+}
+
+void Menu::bottom10Recommendations()
+{
+	printLine("Bottom 10 Recommendation", true, false, true);
+
+	vector<Client> bottom10 = (*clients).CalculateBottom10();
+	Product p = (*advertising).getAdvertising(bottom10);
+	if (p.getName().size() == 0)
+		printLine("There is no recommendation for this client!", true, false, false);
+	else {
+		printLine("\tRecommendations:", true, false, false);
+		printLine("\t\t" + p.getName() + " - " + toStringWithPrecision(p.getPrice(), 2), true, false, false);
+	}
 
 	system("pause");
 }

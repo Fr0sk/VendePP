@@ -1,3 +1,9 @@
+/*
+* Grupo: T7G03*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #include "Clients.h"
 #include "Date.h"
 
@@ -152,4 +158,54 @@ unsigned int Clients::getLastId() const
 bool nameOrder(Client left, Client right)
 {
 	return (left).getName() < (right).getName();
+}
+
+//novo
+bool cmd(const Client & c1, const Client & c2)
+{
+	if (c1.getAmountPaid() < c2.getAmountPaid()) return c1.getAmountPaid() < c2.getAmountPaid();
+	return c1.getAmountPaid() < c2.getAmountPaid();
+}
+//novo
+void Clients::SortClientsByAmountPaid()
+{
+	clients_sorted_by_amoutPaid.clear();
+	for (unsigned int i = 0; i < clients.size(); i++)
+	{
+		clients_sorted_by_amoutPaid.push_back(clients[i]);
+	}
+
+	sort(clients_sorted_by_amoutPaid.begin(), clients_sorted_by_amoutPaid.end(), cmd);
+}
+//novo
+vector<Client> Clients::CalculateBottom10()
+{
+	vector<Client> bottom10;
+
+	SortClientsByAmountPaid();
+
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		if (i == clients_sorted_by_amoutPaid.size())
+			break;
+		else
+			bottom10.push_back((clients_sorted_by_amoutPaid[i]));
+	}
+	return bottom10;
+}
+
+unsigned int Clients::getClientIndex(unsigned int clientId)
+{
+	for (int i = 0; i < clients.size(); i++)
+		if (clients.at(i).getId() == clientId)
+			return i;
+	return clients.size();
+}
+
+bool Clients::exists(unsigned int clientId)
+{
+	for (int i = 0; i < clients.size(); i++)
+		if (clients.at(i).getId() == clientId)
+			return true;
+	return false;
 }

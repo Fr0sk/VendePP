@@ -1,3 +1,9 @@
+/*
+* Grupo: T7G03*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #pragma once
 #include "Product.h"
 #include "Database.h"
@@ -25,5 +31,7 @@ public:
 	void addProduct(string name, double price);
 	void editProduct(unsigned int index, string name, double price);
 	Product getProduct(string name);
+	Product getProduct(unsigned int index);
+	unsigned int getProductIndex(string name);
 };
 

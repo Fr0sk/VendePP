@@ -1,3 +1,10 @@
+/*
+* Grupo: T7G03
+*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #include "Menu.h"
 #include "Clients.h"
 #include "Products.h"
@@ -43,8 +50,11 @@ void menuOperations(Menu menu)
 		case Menu::M_Customers::C_REMOVE:
 			menu.customersRemove();
 			break;
-		case Menu::M_Customers::C_RECOMMENDATIONS:
+		case Menu::M_Customers::C_ADVERTISING:
 			menu.customersRecommendations();
+			break;
+		case Menu::M_Customers::C_BOTTOM_10_ADS:
+			menu.bottom10Recommendations();
 			break;
 		}
 		break;
@@ -122,8 +132,8 @@ int main()
 	Transactions * transactions = new Transactions(transactionsFile, clients, products);
 	Advertising * advertising = new Advertising(clients, products, transactions);
 
-	Menu * menu = new Menu(clients, products, transactions, advertising);
+	Menu menu(clients, products, transactions, advertising);
 
 	while (true)
-		menuOperations((*menu));
+		menuOperations(menu);
 }

@@ -1,3 +1,9 @@
+/*
+* Grupo: T7G03*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #include "Products.h"
 
 #include <iostream>
@@ -94,4 +100,16 @@ Product Products::getProduct(string name)
 		if ((*it).getName() == name)
 			return (*it);
 	return Product("", 0);
+}
+
+Product Products::getProduct(unsigned int index)
+{
+	return products.at(index);
+}
+
+unsigned int Products::getProductIndex(string name)
+{
+	for (int i = 0; i < products.size(); i++)
+		if (products.at(i).getName() == name)
+			return i;
 }

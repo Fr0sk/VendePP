@@ -1,3 +1,10 @@
+/*
+* Grupo: T7G03
+*
+* Filipe Coelho - 201500072
+* Luís Cruz - 201303248
+*/
+
 #pragma once
 #include <string>
 #include <vector>

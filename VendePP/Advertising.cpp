@@ -1,4 +1,83 @@
+/*
+ * Grupo: T7G03
+ * 
+ * Filipe Coelho - 201500072
+ * Luís Cruz - 201303248
+ */
+
 #include "Advertising.h"
+
+#include <map>
+
+// Calculates the boolean matrix
+vector<vector<bool>> Advertising::computeBoolMatrix()
+{
+	vector<vector<bool>> matrix;
+
+	// Creates a matrix with nClients rows and nProducts columns, initialized with false
+	matrix.resize((*clients).size(), vector<bool>((*products).size(), false));
+
+	for (int tIndex = 0; tIndex < (*transactions).size(); tIndex++)
+	{
+		Transaction t = (*transactions).getTransaction(tIndex);
+		unsigned int tClientIndex = clients->getClientIndex(t.getClientId());
+		vector<Product> tProducts = t.getProducts();
+
+		for (vector<Product>::const_iterator tProduct = tProducts.begin(); tProduct != tProducts.end(); tProduct++)
+		{
+			unsigned int pIndex = (*products).getProductIndex(tProduct->getName());
+			matrix.at(tClientIndex).at(pIndex) = true;
+		}
+	}
+	return matrix;
+}
+
+// Counts how many times each product has been bought
+vector<unsigned int> Advertising::computeProductsCount()
+{
+	vector<vector<bool>> matrix = computeBoolMatrix();
+	vector<unsigned int> productCount;
+	productCount.resize(products->size(), 0);
+
+	for (int tIndex = 0; tIndex < (*transactions).size(); tIndex++)
+	{
+		Transaction t = (*transactions).getTransaction(tIndex);
+		vector<Product> tProducts = t.getProducts();
+
+		for (vector<Product>::const_iterator tProduct = tProducts.begin(); tProduct != tProducts.end(); tProduct++)
+		{
+			unsigned int pIndex = (*products).getProductIndex(tProduct->getName());
+			productCount.at(pIndex) += 1;
+		}
+	}
+	return productCount;
+}
+
+unsigned int Advertising::getNumberOfProductsBought(vector<bool> productList)
+{
+	unsigned int count = 0;
+	for (vector<bool>::const_iterator bought = productList.begin(); bought != productList.end(); bought++)
+		if (*bought)
+			count += 1;
+	return count;
+}
+
+vector<unsigned int> Advertising::calculateHistogram(vector<unsigned int> clientIndexes)
+{
+	vector<vector<bool>> matrix = computeBoolMatrix();
+	vector<unsigned int> productHistogram;
+	productHistogram.resize(products->size(), 0);
+
+	for (vector<unsigned int>::const_iterator client = clientIndexes.begin(); client != clientIndexes.end(); client++)
+	{
+		vector<bool> productList = matrix.at(*client);
+		for (vector<bool>::const_iterator bought = productList.begin(); bought != productList.end(); bought++)
+			if (*bought)
+				productHistogram.at(bought - productList.begin()) += 1;
+	}
+
+	return productHistogram;
+}
 
 Advertising::Advertising(Clients * clients, Products * products, Transactions * transactions) :
 	clients(clients),
@@ -8,69 +87,113 @@ Advertising::Advertising(Clients * clients, Products * products, Transactions * 
 	// Empty block
 }
 
-vector<unsigned int> Advertising::getAdvertising(unsigned int clientId)
+Product Advertising::getAdvertising(unsigned int clientId)
 {
-	vector<unsigned int> recommended;
-	vector<vector<bool>> matrix;
+	vector<vector<bool>> matrix = computeBoolMatrix();
+	vector<unsigned int> productsCount = computeProductsCount();
+	unsigned int clientIndex = clients->getClientIndex(clientId);
+	vector<bool> clientProducts = matrix.at(clientIndex);
 
-	// Creates a matrix with nClients rows and nProducts columns, initialized with false
-	matrix.resize((*clients).size(), vector<bool>((*products).size(), false));
-
-	for (unsigned int tId = 1; tId < (*transactions).size(); tId++)
+	unsigned int maxComonProducts = 0;
+	unsigned int commonClientIndex = clientIndex;
+	for (vector<vector<bool>>::const_iterator client = matrix.begin(); client != matrix.end(); client++)
 	{
-		/*Transaction transaction = (*transactions).getTransaction(tId);
+		unsigned int commonProducts = 0;
+		// Continue if hits the client we want to advertise row
+		if (client - matrix.begin() == clientIndex)
+			continue;
+	
+		for (int i = 0; i < products->size(); i++)
+			if (client->at(i) && clientProducts.at(i))
+				commonProducts += 1;
 
-		// Products listen in the transaction
-		vector<unsigned int> productIds;
-		vector<Product> transactionProducts = transaction.getProducts();
-		for (vector<Product>::const_iterator pIt = transactionProducts.begin(); pIt != transactionProducts.end(); pIt++)
-			productIds.push_back((*pIt))
-
-		// The row of the client in the transaction
-		vector<bool> row = matrix.at(transaction.getClientId() - 1);
-
-		// Sets all the products in the transaction to true
-		for (vector<unsigned int>::iterator it = productIds.begin(); it != productIds.end(); it++)
-			row.at((*it) - 1) = true;
-
-		// Updates the row
-		matrix.at(transaction.getClientId() - 1) = row;*/
-	}
-
-	unsigned int maxCommon = 0;
-	unsigned int commonClientId = 0;
-
-	for (vector<vector<bool>>::iterator c = matrix.begin(); c != matrix.end(); c++)
-	{
-		// Does not compare the client with himself
-		if (!(c - matrix.begin() + 1 == clientId))
+		unsigned int curClientNProducts = getNumberOfProductsBought(*client);
+		unsigned int askedClientNProducts = getNumberOfProductsBought(clientProducts);
+		if (commonProducts > maxComonProducts && curClientNProducts > askedClientNProducts)
 		{
-			unsigned int currentCommon = 0;
-			for (vector<bool>::iterator p = (*c).begin(); p != (*c).end(); p++)
+			maxComonProducts = commonProducts;
+			commonClientIndex = client - matrix.begin();
+		}
+	}
+	// If no one has anything in common with provided user or has bought less, returns empty product
+	if (commonClientIndex == clientIndex)
+		return Product("", 0);
+
+	vector<bool> recommended = matrix.at(commonClientIndex);
+	// Removes all common products from recommended
+	for (int i = 0; i > recommended.size(); i++)
+		if (clientProducts.at(i))
+			recommended.at(i) = false;
+
+	unsigned int pIndex = 0;
+	unsigned int count = 0;
+	for (int i = 0; i < recommended.size(); i++)
+		if (recommended.at(i))
+			if (count < productsCount.at(i))
 			{
-				// If its common, increases the counter
-				if (*p)
-					currentCommon++;
+				count = productsCount.at(i);
+				pIndex = i;
 			}
-			// Updates the maxCommon
-			if (currentCommon > maxCommon)
+	if (count == 0)
+		return Product("", 0);
+
+	return products->getProduct(pIndex);
+}
+
+Product Advertising::getAdvertising(vector<Client> ClientList)
+{
+	vector<vector<bool>> matrix = computeBoolMatrix();
+	vector<unsigned int> clientIndex;
+	vector<bool> clientsProducts;
+	clientsProducts.resize(products->size(), false);
+
+	for (vector<Client>::const_iterator it = ClientList.begin(); it != ClientList.end(); it++)
+		clientIndex.push_back(clients->getClientIndex(it->getId()));
+
+	for (int productIndex = 0; productIndex < products->size(); productIndex++)
+	{
+		bool allBought = true;
+		for (vector<unsigned int>::const_iterator client = clientIndex.begin(); client != clientIndex.end(); client++)
+		{
+			if (!matrix.at(*client).at(productIndex))
 			{
-				maxCommon = currentCommon;
-				commonClientId = c - matrix.begin() + 1;
+				allBought = false;
+				break;
 			}
+			clientsProducts.at(productIndex) = allBought;
 		}
 	}
 
-	if (commonClientId == 0)
-		return recommended;
 
-	// Populates recommended vector with recommended products
-	for (vector<bool>::iterator p = matrix.at(commonClientId - 1).begin(); p != matrix.at(commonClientId - 1).end(); p++)
+	vector<unsigned int> commonClients;
+	for (unsigned int client = 0; client < matrix.size(); client++)
 	{
-		// If the current value is true and the client value isn't
-		if (*p && !matrix.at(clientId - 1).at(p - matrix.at(commonClientId - 1).begin()))
-			recommended.push_back(p - matrix.at(commonClientId - 1).begin() + 1);
+		bool common = true;
+		vector<bool> productList = matrix.at(client);
+		for (unsigned productIndex = 0; productIndex < productList.size(); productIndex++)
+		{
+			if (clientsProducts.at(productIndex) && !productList.at(productIndex))
+			{
+				common = false;
+				break;
+			}
+		}
+		if (common)
+			commonClients.push_back(client);
 	}
 
-	return recommended;
+	unsigned int maxCount = 0;
+	unsigned int maxIndex = 0;
+	vector<unsigned int> histogram = calculateHistogram(commonClients);
+	for (int p = 0; p < histogram.size(); p++)
+		if (histogram.at(p) > maxCount)
+		{
+			maxCount = histogram.at(p);
+			maxIndex = p;
+		}
+
+	if (maxCount != 0)
+		return products->getProduct(maxIndex);
+
+	return Product("", 0);
 }
