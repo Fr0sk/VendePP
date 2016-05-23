@@ -1,5 +1,6 @@
 /*
-* Grupo: T7G03*
+* Grupo: T7G03
+*
 * Filipe Coelho - 201500072
 * Luís Cruz - 201303248
 */

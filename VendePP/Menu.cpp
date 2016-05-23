@@ -217,8 +217,7 @@ void Menu::customersView()
 	if (input.find("*") == 0)
 	{
 		(*clients).list();
-	}
-	else {
+	} else {
 		unsigned int id = (unsigned int)std::abs(std::stoi(input));
 		(*clients).printClient(id);
 	}

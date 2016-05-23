@@ -100,7 +100,7 @@ bool fileExists(string fileName)
 int main()
 {
 	string clientsFile = "clients.txt", productsFile = "products.txt", transactionsFile = "transactions.txt";
-	/*cout << "Enter clients file name: ";
+	cout << "Enter clients file name: ";
 	getline(cin, clientsFile);
 	if (!fileExists(clientsFile))
 	{
@@ -125,7 +125,7 @@ int main()
 		cout << "File not found!" << endl;
 		system("pause");
 		return 3;
-	}*/
+	}
 
 	Clients * clients = new Clients(clientsFile);
 	Products * products = new Products(productsFile);
